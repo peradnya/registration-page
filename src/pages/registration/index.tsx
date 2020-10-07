@@ -96,9 +96,10 @@ const Registration: React.FC = () => {
                 <Form.Item name={["birthdate", "month"]}>
                   <Select placeholder="Month" disabled={formDisabled}>
                     {monthList.map((value, index) => {
+                      const str = value.toString().padStart(2, "0");
                       return (
-                        <Option key={index.toString()} value={value.toString()}>
-                          {value}
+                        <Option key={index.toString()} value={str}>
+                          {str}
                         </Option>
                       );
                     })}
@@ -107,9 +108,10 @@ const Registration: React.FC = () => {
                 <Form.Item name={["birthdate", "date"]}>
                   <Select placeholder="Date" disabled={formDisabled}>
                     {dateList.map((value, index) => {
+                      const str = value.toString().padStart(2, "0");
                       return (
-                        <Option key={index.toString()} value={value.toString()}>
-                          {value}
+                        <Option key={index.toString()} value={str}>
+                          {str}
                         </Option>
                       );
                     })}

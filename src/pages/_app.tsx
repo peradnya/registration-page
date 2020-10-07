@@ -1,6 +1,7 @@
 import React from "react";
 import App from "next/app";
 
+import "reflect-metadata";
 import "../css/antd.less";
 
 class MyApp extends App {
