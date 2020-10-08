@@ -1,103 +1,118 @@
+import "reflect-metadata";
 import moment from "moment";
 import { NextApiRequest, NextApiResponse } from "next";
-import { createConnection, getConnectionOptions } from "typeorm";
+import {
+  createConnection,
+  getConnectionManager,
+  getConnectionOptions,
+} from "typeorm";
 import { User } from "../../entity/user";
+import OrmConfig from "../../../orm.config";
 
-const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+const EMAIL_REGEX = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+const OK = "OK";
+const ERROR_1 = "Method not allowed";
+const ERROR_2 = "Mobile number is required";
+const ERROR_3 = "Not valid Indonesian number (start with +62)";
+const ERROR_4 = "Firstname is required";
+const ERROR_5 = "Lastname is required";
+const ERROR_6 = "Day of birth is not valid";
+const ERROR_7 = "Email is required";
+const ERROR_8 = "Email is not valid";
+const ERROR_9 = "Cannot connect to Database";
+const ERROR_10 = "Mobile number already exist";
+const ERROR_11 = "Email already exist";
+const ERROR_12 = "Unknown Error";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method === "POST") {
-    if (req.body !== null) {
-      let mobile: string = req.body.mobile ?? "";
-      let firstname: string = req.body.firstname ?? "";
-      let lastname: string = req.body.lastname ?? "";
-      let birthdate: string =
-        (req.body.birthdate?.year ?? "") +
-        (req.body.birthdate?.month ?? "") +
-        (req.body.birthdate?.date ?? "");
-      let email: string = req.body.email ?? "";
+  if (req.method === "POST" && req.body !== null) {
+    let mobile = req.body.mobile ?? "";
+    let firstname = req.body.firstname ?? "";
+    let lastname = req.body.lastname ?? "";
+    let birthdate =
+      (req.body.birthdate?.year ?? "") +
+      (req.body.birthdate?.month ?? "") +
+      (req.body.birthdate?.date ?? "");
+    let gender = req.body.gender ?? "";
+    let email = req.body.email ?? "";
 
-      // check mobile number
-      if (mobile.length === 0) {
-        res
-          .status(400)
-          .json({ type: "mobile", detail: "Mobile number is required" });
-        return;
-      }
-      if (!mobile.startsWith("+62")) {
-        res.status(400).json({
-          type: "mobile",
-          detail: "Not Indonesian mobile number (start with +62)",
-        });
-        return;
-      }
+    // check mobile number
+    if (mobile.length === 0) {
+      res.status(400).json({ type: 2, detail: ERROR_2 });
+      return;
+    }
+    if (!mobile.startsWith("+62") || isNaN(mobile.substring(1))) {
+      res.status(400).json({ type: 3, detail: ERROR_3 });
+      return;
+    }
 
-      // check firstname
-      if (firstname.length === 0) {
-        res
-          .status(400)
-          .json({ type: "firstname", detail: "Firstname is required" });
-        return;
-      }
+    // check firstname
+    if (firstname.length === 0) {
+      res.status(400).json({ type: 4, detail: ERROR_4 });
+      return;
+    }
 
-      // check lastname
-      if (lastname.length === 0) {
-        res
-          .status(400)
-          .json({ type: "lastname", detail: "Lastname is required" });
-        return;
-      }
+    // check lastname
+    if (lastname.length === 0) {
+      res.status(400).json({ type: 5, detail: ERROR_5 });
+      return;
+    }
 
-      // check birthdate
-      if (
-        birthdate.length > 0 &&
-        !moment(birthdate, "YYYYMMDD", true).isValid()
-      ) {
-        res
-          .status(400)
-          .json({ type: "birthdate", detail: "Day of birth is not valid" });
-        return;
-      }
+    // check birthdate
+    if (
+      birthdate.length > 0 &&
+      !moment(birthdate, "YYYYMMDD", true).isValid()
+    ) {
+      res.status(400).json({ type: 6, detail: ERROR_6 });
+      return;
+    }
 
-      // check email
-      if (email.length === 0) {
-        res.status(400).json({ type: "email", detail: "Email is required" });
-        return;
-      }
-      if (!emailRegex.test(email.toLowerCase())) {
-        res.status(400).json({ type: "email", detail: "Email is not valid" });
-        return;
+    // check email
+    if (email.length === 0) {
+      res.status(400).json({ type: 7, detail: ERROR_7 });
+      return;
+    }
+    if (!EMAIL_REGEX.test(email.toLowerCase())) {
+      res.status(400).json({ type: 8, detail: ERROR_8 });
+      return;
+    }
+
+    try {
+      if (!getConnectionManager().has("default")) {
+        await createConnection(OrmConfig);
       }
 
-      const connectionOptions = await getConnectionOptions();
+      const db = getConnectionManager().get("default");
 
-      Object.assign(connectionOptions, { entities: [User] });
+      let user = new User();
+      user.mobile = mobile;
+      user.firstname = firstname;
+      user.lastname = lastname;
+      user.birthdate = birthdate.length === 0 ? null : birthdate;
+      user.gender = gender.length === 0 ? null : gender;
+      user.email = email;
 
-      createConnection(connectionOptions)
-        .then(async (connection) => {
-          let user = new User();
+      try {
+        await db.manager.save(user);
+        res.status(200).json({ detail: OK });
+      } catch (err) {
+        console.log(err);
 
-          user.mobile = mobile;
-          user.firstname = firstname;
-          user.lastname = lastname;
-          user.birthdate = birthdate.length === 0 ? null : birthdate;
-          user.gender = req.body.gender;
-          user.email = email;
+        if (err.code === "23505") {
+          if (err.detail.includes("(mobile)")) {
+            res.status(400).json({ type: 10, detail: ERROR_10 });
+          } else if (err.detail.includes("(email)")) {
+            res.status(400).json({ type: 11, detail: ERROR_11 });
+          }
+        }
 
-          await connection.manager.save(user);
-
-          await connection.close();
-
-          res.status(200).json({ detail: "ok" });
-        })
-        .catch((error) => {
-          console.log(error);
-          res.status(400).json({ type: "body", detail: "DB error" });
-        });
-    } else {
-      res.status(400).json({ type: "body", detail: "Form is empty" });
+        res.status(400).json({ type: 12, detail: ERROR_12 });
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ type: 9, detail: ERROR_9 });
     }
   } else {
-    res.status(405).json({ type: "method", detail: "Method not allowed" });
+    res.status(405).json({ type: 1, detail: ERROR_1 });
   }
 };

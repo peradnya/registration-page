@@ -51,7 +51,6 @@ const Registration: React.FC = () => {
       } catch (error) {
         setFormDisabled(false);
         setShowError(true);
-        console.log(error.response);
         setErrorText(error.response.data.detail);
       }
     },
@@ -98,9 +97,9 @@ const Registration: React.FC = () => {
                     {monthList.map((value, index) => {
                       const str = value.toString().padStart(2, "0");
                       return (
-                        <Option key={index.toString()} value={str}>
+                        <Select.Option key={index.toString()} value={str}>
                           {str}
-                        </Option>
+                        </Select.Option>
                       );
                     })}
                   </Select>
@@ -110,9 +109,9 @@ const Registration: React.FC = () => {
                     {dateList.map((value, index) => {
                       const str = value.toString().padStart(2, "0");
                       return (
-                        <Option key={index.toString()} value={str}>
+                        <Select.Option key={index.toString()} value={str}>
                           {str}
-                        </Option>
+                        </Select.Option>
                       );
                     })}
                   </Select>
@@ -121,9 +120,12 @@ const Registration: React.FC = () => {
                   <Select placeholder="Year" disabled={formDisabled}>
                     {yearList.map((value, index) => {
                       return (
-                        <Option key={index.toString()} value={value.toString()}>
+                        <Select.Option
+                          key={index.toString()}
+                          value={value.toString()}
+                        >
                           {value}
-                        </Option>
+                        </Select.Option>
                       );
                     })}
                   </Select>
@@ -157,7 +159,7 @@ const Registration: React.FC = () => {
         </Tooltip>
       </Content>
       <Footer>
-        <Button type="primary" block onClick={onLogin}>
+        <Button type="primary" hidden={!showLogin} block onClick={onLogin}>
           Login
         </Button>
       </Footer>
