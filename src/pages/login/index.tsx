@@ -4,6 +4,9 @@ import React from "react";
 const { Header, Footer, Content } = Layout;
 const { Title } = Typography;
 
+/**
+ * Login page of application.
+ */
 const Login: React.FC = () => {
   return (
     <Layout>

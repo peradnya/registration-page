@@ -1,22 +1,22 @@
 import "reflect-metadata";
 import moment from "moment";
 import { NextApiRequest, NextApiResponse } from "next";
-import {
-  createConnection,
-  getConnectionManager,
-  getConnectionOptions,
-} from "typeorm";
+import { createConnection, getConnectionManager } from "typeorm";
 import { User } from "../../entity/user";
 import OrmConfig from "../../../orm.config";
 
+// Regex to validate email name
 const EMAIL_REGEX = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+
 const OK = "OK";
+
+// Error Code
 const ERROR_1 = "Method not allowed";
 const ERROR_2 = "Mobile number is required";
 const ERROR_3 = "Not valid Indonesian number (start with +62)";
 const ERROR_4 = "Firstname is required";
 const ERROR_5 = "Lastname is required";
-const ERROR_6 = "Day of birth is not valid";
+const ERROR_6 = "Date of birth is not valid";
 const ERROR_7 = "Email is required";
 const ERROR_8 = "Email is not valid";
 const ERROR_9 = "Cannot connect to Database";
@@ -24,6 +24,9 @@ const ERROR_10 = "Mobile number already exist";
 const ERROR_11 = "Email already exist";
 const ERROR_12 = "Unknown Error";
 
+/**
+ * Register REST API of Application.
+ */
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST" && req.body !== null) {
     let mobile = req.body.mobile ?? "";
@@ -78,6 +81,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     try {
+      // check if db connection already created.
       if (!getConnectionManager().has("default")) {
         await createConnection(OrmConfig);
       }
@@ -96,8 +100,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         await db.manager.save(user);
         res.status(200).json({ detail: OK });
       } catch (err) {
-        console.log(err);
-
         if (err.code === "23505") {
           if (err.detail.includes("(mobile)")) {
             res.status(400).json({ type: 10, detail: ERROR_10 });
@@ -109,7 +111,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(400).json({ type: 12, detail: ERROR_12 });
       }
     } catch (err) {
-      console.log(err);
       res.status(400).json({ type: 9, detail: ERROR_9 });
     }
   } else {

@@ -17,10 +17,14 @@ import { useRouter } from "next/router";
 const { Header, Footer, Content } = Layout;
 const { Title } = Typography;
 
+/**
+ * Registration page of application.
+ */
 const Registration: React.FC = () => {
   const [form] = useForm();
   const router = useRouter();
 
+  // Generate month, date, and year
   const monthList = Array.from(Array(12), (_, i) => i + 1);
   const dateList = Array.from(Array(31), (_, i) => i + 1);
   const yearList = Array.from(Array(150), (_, i) => i + 1900);
@@ -30,6 +34,7 @@ const Registration: React.FC = () => {
   const [showError, setShowError] = useState(false);
   const [errorText, setErrorText] = useState("");
 
+  // callback that called when user click "Register" button.
   const onFinish = useCallback(
     async (value) => {
       setFormDisabled(true);
@@ -47,10 +52,14 @@ const Registration: React.FC = () => {
     [setFormDisabled, setShowLogin, setShowError, setErrorText]
   );
 
-  const onLogin = useCallback((e) => {
-    e.preventDefault();
-    router.push("/login");
-  }, []);
+  // callback that called when user click "Login" button.
+  const onLogin = useCallback(
+    (e) => {
+      e.preventDefault();
+      router.push("/login");
+    },
+    [router]
+  );
 
   return (
     <Layout>
@@ -142,7 +151,7 @@ const Registration: React.FC = () => {
                 htmlType="submit"
                 disabled={formDisabled}
               >
-                Submit
+                Register
               </Button>
             </Form.Item>
           </Form>
