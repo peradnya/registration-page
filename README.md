@@ -1,8 +1,17 @@
 # Registration Page
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project contain example of registration page. This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Prequisited
+Below are the technology used by this project:
+
+- [ReactJS](https://reactjs.org/) for JS Framework
+- [Typescript](https://www.typescriptlang.org/) for JS Transcripter
+- [ant.design](https://ant.design/) for UI components
+- [Next.js](https://nextjs.org/) for Fullstack Web Server and Client
+- [TypeORM](https://typeorm.io/#/) for Javascript based ORM
+- [Jest](https://jestjs.io/) for Unit Testing Tools
+
+## Prerequisite
 
 Please install following apps before building the project.
 
@@ -61,7 +70,7 @@ To run the project please execute following command:
 npm run start
 ```
 
-after the server is online, you can access the webpage by enter url `http://localhost:3000/` in your web browser.
+after the server is online, you can access the webpage by entering url `http://localhost:3000/` in your web browser.
 
 ## Run the Test
 
@@ -71,11 +80,12 @@ To run the project unit test please execute following command:
 npm run test
 ```
 
-## Developer note
+## Developer Note
 
 Below is the assumptions and disclaimer used by developer when creating this application:
 
 - User already configure their Postgres SQL to be able run normally
 - Date of birth is either "all not set" or "all set" (not partial)
 - The indonesian phone validation is based on "+62" substring in the beginning of phone number
-- developer use windows to create this application and not tested in linux or mac.
+- developer use windows when developing this application.
+- developer use google chrome when developing this application.

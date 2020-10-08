@@ -12,7 +12,6 @@ import {
 import { useForm } from "antd/lib/form/Form";
 import React, { useCallback, useState } from "react";
 import axios from "axios";
-import { Option } from "antd/lib/mentions";
 import { useRouter } from "next/router";
 
 const { Header, Footer, Content } = Layout;
@@ -30,15 +29,6 @@ const Registration: React.FC = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showError, setShowError] = useState(false);
   const [errorText, setErrorText] = useState("");
-
-  const [mobile, setMobile] = useState();
-  const [firstname, setFirstname] = useState();
-  const [lastname, setLastname] = useState();
-  const [gender, setGender] = useState();
-  const [email, setEmail] = useState();
-  const [date, setDate] = useState();
-  const [month, setMonth] = useState();
-  const [year, setYear] = useState();
 
   const onFinish = useCallback(
     async (value) => {
@@ -67,7 +57,7 @@ const Registration: React.FC = () => {
       <Header>
         <Menu theme="dark" mode="horizontal"></Menu>
       </Header>
-      <Content>
+      <Content className="content">
         <Title>Registration</Title>
         <Tooltip
           visible={showError}
