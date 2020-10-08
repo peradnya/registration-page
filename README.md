@@ -1,68 +1,81 @@
+# Registration Page
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Prequisited
 
-In the project directory, you can run:
+Please install following apps before building the project.
 
-### `npm start`
+- NodeJS LTS 12.18.4 (https://nodejs.org/en/)
+- Postgres SQL 13 (https://www.postgresql.org/download/)
+- Git (https://git-scm.com/downloads)
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Building Project
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+- Checkout and clone this project into your computer using following command:
 
-### `npm test`
+  ```sh
+  git clone https://github.com/peradnya/registration-page.git
+  ```
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Configure the DB configuration for project in the `[project root]/orm.config.ts`. Below is the field you should modify based on your DB setup:
 
-### `npm run build`
+  ```
+  const OrmConfig: ConnectionOptions = {
+    type: "postgres",
+    host: <db location>,
+    port: <db port>,
+    username: <username>,
+    password: <password>,
+    database: <database name>,
+    synchronize: true,
+    logging: false,
+    entities: [User],
+    subscribers: ["src/subscriber/*.js"],
+    migrations: ["src/migration/*.js"],
+    cli: {
+      entitiesDir: "src/entity",
+      migrationsDir: "src/migration",
+      subscribersDir: "src/subscriber",
+    },
+  };
+  ```
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* In the `[project root]` please execute following command to install all project dependencies:
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+  ```sh
+  npm install
+  ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+* After that, in the `[project root]` please execute following command to build the release binary of project:
 
-### `npm run eject`
+  ```sh
+  npm run build
+  ```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Run the Project
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+To run the project please execute following command:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```sh
+npm run start
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+after the server is online, you can access the webpage by enter url `http://localhost:3000/` in your web browser.
 
-## Learn More
+## Run the Test
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+To run the project unit test please execute following command:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```sh
+npm run test
+```
 
-### Code Splitting
+## Developer note
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+Below is the assumptions and disclaimer used by developer when creating this application:
 
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+- User already configure their Postgres SQL to be able run normally
+- Date of birth is either "all not set" or "all set" (not partial)
+- The indonesian phone validation is based on "+62" substring in the beginning of phone number
+- developer use windows to create this application and not tested in linux or mac.
